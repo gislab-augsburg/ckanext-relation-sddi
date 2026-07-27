@@ -13,6 +13,10 @@ For releases `< 1.0.0` minor version steps may indicate breaking changes too.
 - Interactive, pannable and zoomable diagram for the complete accessible
   transitive lineage network.
 
+### Fixed
+- Prevent the optional LHM relationship editor from overriding CKAN themes
+  with a global Bootstrap 3 stylesheet.
+
 ## [1.1.2] - 2025-05-13
 ### Fixed
 - Fix overlapping edges and increased default edge length

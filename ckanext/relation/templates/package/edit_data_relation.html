@@ -3,6 +3,13 @@
 {% set logged_in = true if c.userobj else false %}
 {% set res = c.resource %}
 
+{% block styles %}
+  {{ super() }}
+  {% if h.rel_diagram_style() == 'lhm' %}
+    {% asset 'relation/lhm_editor_css' %}
+  {% endif %}
+{% endblock %}
+
 {% block breadcrumb_content_selected %}{% endblock %}
 
 {% block form_title %}{{ _('Edit view') }}{% endblock %}
@@ -14,11 +21,17 @@
   {% endif %}
 {% endblock %}
 
-{% block primary_content_inner %}{% snippet 'package/snippets/data_relation_fields.html', data=None, errors=None, error_summary=error_summary, include_metadata=false, pkg_name=package_id, stage=hi, allow_upload=g.ofs_impl and logged_in, dataset_type=dataset_type %}
+{% block primary_content_inner %}
+{% if h.rel_diagram_style() == 'lhm' %}
+<div class="relation-lhm-editor">
+  {% snippet 'package/snippets/data_relation_fields.html', data=None, errors=None, error_summary=error_summary, include_metadata=false, pkg_name=package_id, stage=hi, allow_upload=g.ofs_impl and logged_in, dataset_type=dataset_type %}
+</div>
+{% else %}
+{% snippet 'package/snippets/data_relation_fields.html', data=None, errors=None, error_summary=error_summary, include_metadata=false, pkg_name=package_id, stage=hi, allow_upload=g.ofs_impl and logged_in, dataset_type=dataset_type %}
+{% endif %}
 {% endblock %}
 
 
 {#{% block secondary_content %}
   {% snippet 'package/snippets/data_relation_help.html' %}
 {% endblock %}#}
-

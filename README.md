@@ -70,6 +70,10 @@ and displays only `depends_on` lineage:
 For a relationship `A depends_on B`, the LHM diagram draws the lineage edge
 from `B` to `A`.
 
+In `lhm` mode, the relationship editor uses CKAN's existing styles instead of
+loading Bootstrap 3 globally from an external CDN. The default `tum` mode
+keeps the original editor markup and stylesheet behavior.
+
 
 ----------------------
 Developer installation

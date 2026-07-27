@@ -6,7 +6,9 @@
 {% set action = form_action or h.url_for(c.link) %} 
 {% set pkg = c.pkg_dict %}
 
- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+ {% if h.rel_diagram_style() != 'lhm' %}
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+ {% endif %}
   
   {% block package_metadata_fields_custom %}
   <form id="{{ form_id }}0" method = "POST" action="{{ action }}" >
@@ -50,7 +52,11 @@
         <h4 class="panel-title">
           <a data-bs-toggle="collapse" data-parent="#accordion" href="#{{ ref_id }}">
             <span class="fa fa-link text-success"></span> {{ _('Add Relationship') }}
-            <span class="glyphicon glyphicon-chevron-down pull-right"></span>
+            {% if h.rel_diagram_style() == 'lhm' %}
+              <i class="fa fa-chevron-down float-end" aria-hidden="true"></i>
+            {% else %}
+              <span class="glyphicon glyphicon-chevron-down pull-right"></span>
+            {% endif %}
           </a>
         </h4>
       </div>

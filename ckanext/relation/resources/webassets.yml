@@ -19,3 +19,7 @@ lhm_context_js:
 lhm_diagram_js:
   contents:
     - js/lhm_diagram.js
+
+lhm_editor_css:
+  contents:
+    - css/lhm_editor.css
