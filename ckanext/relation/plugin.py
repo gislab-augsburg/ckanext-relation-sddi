@@ -26,6 +26,8 @@ class RelationPlugin(MixinPlugin, p.SingletonPlugin):
     p.implements(p.ITranslation)                                
     p.implements(p.IConfigurable)
     p.implements(p.ITemplateHelpers)
+    if hasattr(p, "IConfigDeclaration"):
+        p.implements(p.IConfigDeclaration)
 
     package_link = "/dataset/"
 
@@ -60,7 +62,17 @@ class RelationPlugin(MixinPlugin, p.SingletonPlugin):
             "rel_id_list": h.rel_id_list,
             "has_relationship": h.has_relationship,
             "outgoing_relationship": h.outgoing_relationship,
+            "rel_diagram_style": h.get_diagram_style,
         }
+
+    def declare_config_options(self, declaration, key):
+        declaration.declare(
+            h.DIAGRAM_STYLE_CONFIG,
+            h.DEFAULT_DIAGRAM_STYLE,
+        ).set_description(
+            "Relationship presentation style. Use 'tum' for the original "
+            "view or 'lhm' for the lineage context view and diagram."
+        )
 
     # def i18n_directory(self):
         # '''Change the directory of the *.mo translation files
