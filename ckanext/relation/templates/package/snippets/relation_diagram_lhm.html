@@ -1,0 +1,111 @@
+{% extends "package/read_base.html" %}
+
+{% set pkg = g.pkg_dict or pkg_dict %}
+
+{% block styles %}
+  {{ super() }}
+  {% asset 'relation/lhm_context_css' %}
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  {% asset 'relation/lhm_diagram_js' %}
+{% endblock %}
+
+{% block primary_content_inner %}
+  <div class="relation-lhm-diagram" data-relation-lhm-diagram>
+    <div class="relation-lhm-diagram-header">
+      <div>
+        <h1>Kontextdiagramm</h1>
+        <p>
+          Alle erreichbaren <code>depends_on</code>-Vorgänger und -Nachfolger
+          von {{ h.dataset_display_name(pkg) }}.
+        </p>
+      </div>
+      <a class="btn btn-default" href="{{ h.url_for('relation.relations', id=pkg.name) }}">
+        <i class="fa fa-arrow-left" aria-hidden="true"></i>
+        Zur Kontextseite
+      </a>
+    </div>
+
+    <div class="relation-lhm-toolbar">
+      <div class="relation-lhm-current">
+        <i class="fa fa-crosshairs" aria-hidden="true"></i>
+        <span>Kontext von</span>
+        <strong data-current-title></strong>
+      </div>
+      <div class="btn-group" aria-label="Diagrammsteuerung">
+        <button
+          type="button"
+          class="btn btn-default"
+          data-zoom-out
+          title="Verkleinern"
+          aria-label="Verkleinern"
+        >
+          <i class="fa fa-search-minus" aria-hidden="true"></i>
+        </button>
+        <button
+          type="button"
+          class="btn btn-default"
+          data-zoom-in
+          title="Vergrößern"
+          aria-label="Vergrößern"
+        >
+          <i class="fa fa-search-plus" aria-hidden="true"></i>
+        </button>
+        <button type="button" class="btn btn-default" data-fit>
+          <i class="fa fa-arrows-alt" aria-hidden="true"></i>
+          Einpassen
+        </button>
+      </div>
+    </div>
+
+    <div
+      class="relation-lhm-graph-stage"
+      aria-label="Verschiebbares und zoombares Kontextdiagramm"
+    >
+      <svg
+        class="relation-lhm-svg"
+        viewBox="0 0 1080 530"
+        role="img"
+        aria-label="Alle transitiven Vorgänger und Nachfolger"
+      >
+        <g data-viewport>
+          <g data-guides></g>
+          <g data-edges></g>
+          <g data-nodes></g>
+        </g>
+      </svg>
+    </div>
+
+    <div class="relation-lhm-details" aria-live="polite">
+      <span class="relation-lhm-detail-category" data-selected-category>
+        <img data-selected-category-icon src="" alt="">
+      </span>
+      <div class="relation-lhm-detail-field relation-lhm-detail-dataset">
+        <span>Datensatz</span>
+        <strong data-selected-title></strong>
+      </div>
+      <div class="relation-lhm-detail-field relation-lhm-detail-source">
+        <span>Datenquelle</span>
+        <strong data-selected-source></strong>
+      </div>
+      <div class="relation-lhm-detail-field relation-lhm-detail-owner">
+        <span>Datenverantwortlicher</span>
+        <strong data-selected-owner></strong>
+      </div>
+      <div class="relation-lhm-detail-field relation-lhm-detail-format-field">
+        <span>Ressourcenformat</span>
+        <span class="relation-lhm-detail-formats" data-selected-formats></span>
+      </div>
+      <a class="btn btn-default relation-lhm-detail-link" data-selected-link href="#">
+        Datensatz öffnen
+        <i class="fa fa-external-link" aria-hidden="true"></i>
+      </a>
+    </div>
+
+    <script type="application/json" data-relation-graph>
+      {{ graph|tojson }}
+    </script>
+  </div>
+{% endblock %}

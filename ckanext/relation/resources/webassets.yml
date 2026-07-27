@@ -7,3 +7,15 @@ main_css:
 main_js:
   contents:
     - js/cytoscape.min.js
+
+lhm_context_css:
+  contents:
+    - css/lhm_context.css
+
+lhm_context_js:
+  contents:
+    - js/lhm_context.js
+
+lhm_diagram_js:
+  contents:
+    - js/lhm_diagram.js

@@ -1,0 +1,125 @@
+{% extends "package/read_base.html" %}
+
+{% set pkg = g.pkg_dict or pkg_dict %}
+
+{% block styles %}
+  {{ super() }}
+  {% asset 'relation/lhm_context_css' %}
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  {% asset 'relation/lhm_context_js' %}
+{% endblock %}
+
+{% macro relation_list(items, list_name) %}
+  <ul class="relation-lhm-list" data-relation-list="{{ list_name }}">
+    {% for item in items %}
+      <li class="relation-lhm-item{% if loop.index > preview_limit %} is-extra{% endif %}">
+        <a class="relation-lhm-link" href="{{ item.url }}">
+          <img
+            class="relation-lhm-category-icon"
+            src="{{ item.category.icon }}"
+            alt=""
+            title="{{ item.category.label }}"
+          >
+          <span class="relation-lhm-content">
+            <span class="relation-lhm-main">
+              <span class="relation-lhm-title" title="{{ item.title }}">{{ item.title }}</span>
+              {% if item.formats %}
+                <span class="relation-lhm-formats">
+                  {% for format in item.formats[:2] %}
+                    <span class="relation-lhm-format">{{ format }}</span>
+                  {% endfor %}
+                  {% if item.formats|length > 2 %}
+                    <span class="relation-lhm-format">+{{ item.formats|length - 2 }}</span>
+                  {% endif %}
+                </span>
+              {% endif %}
+            </span>
+            <span class="relation-lhm-meta">
+              <span class="relation-lhm-meta-item">
+                <span class="relation-lhm-label">Datenquelle</span>
+                <span>{{ item.source or '–' }}</span>
+              </span>
+              <span class="relation-lhm-meta-item">
+                <span class="relation-lhm-label">Datenverantwortlicher</span>
+                <span>{{ item.owner or '–' }}</span>
+              </span>
+            </span>
+          </span>
+          <i class="fa fa-chevron-right relation-lhm-arrow" aria-hidden="true"></i>
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+
+  {% if items|length > preview_limit %}
+    <div class="relation-lhm-more">
+      <button
+        type="button"
+        class="btn btn-default btn-sm"
+        data-toggle-relation-list="{{ list_name }}"
+        data-hidden-count="{{ items|length - preview_limit }}"
+        aria-expanded="false"
+      >
+        <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+        Weitere {{ items|length - preview_limit }} anzeigen
+      </button>
+    </div>
+  {% endif %}
+{% endmacro %}
+
+{% block primary_content_inner %}
+  <div class="relation-lhm-context">
+    <h1>
+      {{ h.dataset_display_name(pkg) }}
+      {% if pkg.state.startswith('draft') %}[{{ _('Draft') }}]{% endif %}
+      {% if pkg.state == 'deleted' %}[{{ _('Deleted') }}]{% endif %}
+    </h1>
+
+    <p class="relation-lhm-intro">
+      Auf dieser Seite werden ausschließlich direkte
+      <code>depends_on</code>-Beziehungen angezeigt.
+    </p>
+
+    <section class="relation-lhm-section" aria-labelledby="relation-lhm-predecessors">
+      <div class="relation-lhm-section-heading">
+        <h2 id="relation-lhm-predecessors">Vorgänger – Ressource nutzt</h2>
+        <span class="relation-lhm-count">
+          {{ predecessors|length }} direkte{% if predecessors|length == 1 %}r Vorgänger{% else %} Vorgänger{% endif %}
+        </span>
+      </div>
+      {% if predecessors %}
+        {{ relation_list(predecessors, 'predecessors') }}
+      {% else %}
+        <p class="relation-lhm-empty">Keine direkten Vorgänger vorhanden.</p>
+      {% endif %}
+    </section>
+
+    <section class="relation-lhm-section" aria-labelledby="relation-lhm-successors">
+      <div class="relation-lhm-section-heading">
+        <h2 id="relation-lhm-successors">Nachfolger – Ressource wird genutzt in</h2>
+        <span class="relation-lhm-count">
+          {{ successors|length }} direkte{% if successors|length == 1 %}r Nachfolger{% else %} Nachfolger{% endif %}
+        </span>
+      </div>
+      {% if successors %}
+        {{ relation_list(successors, 'successors') }}
+      {% else %}
+        <p class="relation-lhm-empty">Keine direkten Nachfolger vorhanden.</p>
+      {% endif %}
+    </section>
+
+    <div class="relation-lhm-diagram-action">
+      <p>Alle direkten und indirekten Vorgänger und Nachfolger anzeigen.</p>
+      <a
+        class="btn btn-primary relation-lhm-diagram-button"
+        href="{{ h.url_for('relation.relation_diagram', id=pkg.name) }}"
+      >
+        <i class="fa fa-sitemap" aria-hidden="true"></i>
+        Kontextdiagramm
+      </a>
+    </div>
+  </div>
+{% endblock %}

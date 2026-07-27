@@ -9,6 +9,7 @@ import ckan.plugins.toolkit as tk
 import ckan.lib.helpers as h
 import ckan.lib.navl.dictization_functions as dict_fns
 import ckan.lib.base as base
+import ckanext.relation.helpers as relation_helpers
 
 from ckan.lib.plugins import lookup_package_plugin
 
@@ -30,8 +31,8 @@ ValidationError = tk.ValidationError
 #        pass
 
 
-def relations(id):
-    context = {
+def _view_context():
+    return {
         "model": model,
         "session": model.Session,
         "user": tk.g.user,
@@ -39,18 +40,66 @@ def relations(id):
         "auth_user_obj": tk.g.userobj,
         "use_cache": False,
     }
+
+
+def relations(id):
+    context = _view_context()
     data_dict = {"id": id}
 
     try:
-        tk.g.pkg_dict = pkg_dict = tk.get_action("package_show")(context, data_dict)
+        if relation_helpers.get_diagram_style() == "lhm":
+            page_data = relation_helpers.get_lhm_context(id, context)
+            pkg_dict = page_data["package"]
+        else:
+            page_data = None
+            pkg_dict = tk.get_action("package_show")(context, data_dict)
+        tk.g.pkg_dict = tk.g.pkg = pkg_dict
         dataset_type = pkg_dict["type"] or "dataset"
     except NotFound:
         tk.abort(404, tk._("Dataset not found"))
     except NotAuthorized:
         tk.abort(401, tk._("Unauthorized to read dataset %s") % id)
-    return tk.render("package/snippets/relation_list.html", {
-        "dataset_type": dataset_type,
-        "pkg_dict": pkg_dict}
+
+    if page_data is not None:
+        return tk.render(
+            "package/snippets/relation_context_lhm.html",
+            extra_vars={
+                "dataset_type": dataset_type,
+                "pkg_dict": pkg_dict,
+                "predecessors": page_data["predecessors"],
+                "successors": page_data["successors"],
+                "preview_limit": page_data["preview_limit"],
+            },
+        )
+
+    return tk.render(
+        "package/snippets/relation_list.html",
+        extra_vars={"dataset_type": dataset_type, "pkg_dict": pkg_dict},
+    )
+
+
+def relation_diagram(id):
+    if relation_helpers.get_diagram_style() != "lhm":
+        tk.abort(404, tk._("Page not found"))
+
+    context = _view_context()
+    try:
+        pkg_dict = tk.get_action("package_show")(context, {"id": id})
+        graph = relation_helpers.build_lhm_context_graph(id, context)
+        tk.g.pkg_dict = tk.g.pkg = pkg_dict
+        dataset_type = pkg_dict["type"] or "dataset"
+    except NotFound:
+        tk.abort(404, tk._("Dataset not found"))
+    except NotAuthorized:
+        tk.abort(401, tk._("Unauthorized to read dataset %s") % id)
+
+    return tk.render(
+        "package/snippets/relation_diagram_lhm.html",
+        extra_vars={
+            "dataset_type": dataset_type,
+            "pkg_dict": pkg_dict,
+            "graph": graph,
+        },
     )
 
 
@@ -372,6 +421,10 @@ def edit_relation(id, data=None, errors=None):
 
 
 relation.add_url_rule("/dataset/relationship/<id>", view_func=relations),
+relation.add_url_rule(
+    "/dataset/relationship/<id>/diagram",
+    view_func=relation_diagram,
+),
 relation.add_url_rule("/dataset/relationship/new_relationship/<id>", view_func=new_relation, methods=("GET", "POST")),
 relation.add_url_rule("/dataset/<id>/resource/new", view_func=CreateResource.as_view(str(u'new_res'))),
 relation.add_url_rule("/dataset/relationship/add/<id>", view_func=finalrel, methods=("GET", "POST")),

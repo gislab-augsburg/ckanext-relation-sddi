@@ -46,7 +46,29 @@ To install ckanext-relation:
 Config settings
 ---------------
 
-None at present
+The presentation can be selected without changing the relationship data:
+
+```ini
+# Original ckanext-relation-sddi page (default)
+ckanext.relation_sddi_diagram_style = tum
+
+# LHM lineage context page and interactive context diagram
+ckanext.relation_sddi_diagram_style = lhm
+```
+
+The `tum` setting keeps the original relationship list and Cytoscape
+visualization. The `lhm` setting changes the dataset tab label to `Kontext`
+and displays only `depends_on` lineage:
+
+- direct dependencies are shown as predecessors;
+- datasets depending on the current dataset are shown as successors;
+- the context diagram follows all accessible direct and indirect
+  predecessors and successors;
+- graph nodes can be selected to focus their context, and the diagram can be
+  panned and zoomed.
+
+For a relationship `A depends_on B`, the LHM diagram draws the lineage edge
+from `B` to `A`.
 
 
 ----------------------
@@ -65,4 +87,3 @@ do::
 License
 --------
 The ckanext-relation is available as free and open source and is licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0). 
-
