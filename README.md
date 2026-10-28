@@ -5,19 +5,18 @@ Overview
 ------------
 
 This extension provides an UI for creating, deleting and viewing relationships between datasets.
-If the extension is used with [ckanext-grouphierarchy-sddi](https://github.com/tum-gis/ckanext-grouphierarchy-sddi) extension, the graphical representation will be in the colours of the groups defined in the [ckanext-grouphierarchy-sddi](https://github.com/tum-gis/ckanext-grouphierarchy-sddi) extension.
 
-In this implementation which is specifically designed for the requirements of [HEF, TUM](http://www.hef.wzw.tum.de/).
+In this implementation which is specifically designed for the requirements of Landeshauptstadt München (LHM).
 
-In the following image is one example of the implementation:
+In the following image is one example of the LHM implementation:
 
-![image](https://github.com/tum-gis/ckanext-relation-sddi/assets/93824048/5dcf7a0a-181c-48f2-be57-4f645be2a5a6)
+![image](images/context_diagram.jpg)
 
 ------------
 Requirements
 ------------
 
-This extension is tested with CKAN 2.11.0.
+This extension is tested with CKAN 2.11.5.
 
 ------------
 Installation
